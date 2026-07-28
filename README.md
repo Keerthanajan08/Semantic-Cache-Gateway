@@ -55,7 +55,7 @@ when there's no shortcut and a real answer has to be generated. Keeping
 them distinct is what makes each one easy to reason about (and to explain
 in an interview).
 
-## Design decisions worth knowing (and being asked about)
+## Design decisions worth knowing
 
 - **Cosine similarity via a Python scan, not RediSearch/ANN index.** At
   the scale a demo or early-stage product runs at (hundreds to low
@@ -120,7 +120,7 @@ curl -X POST http://127.0.0.1:8000/query \
 curl http://127.0.0.1:8000/stats
 ```
 
-## Using a real LLM (still free)
+## Using a real LLM
 
 Pick one, both have usable free tiers:
 
@@ -134,7 +134,7 @@ LLM_PROVIDER=groq
 GROQ_API_KEY=your_key_here
 ```
 
-## Deploying (still free)
+## Deploying
 
 | Piece | Where | Why |
 |---|---|---|
@@ -177,12 +177,3 @@ tests/
   test_cache.py       unit tests for cache hit/miss logic
 ```
 
-## Honest scope
-
-This is a portfolio project, not a production system. Things a real
-production version would add: an ANN index for the cache at scale, cache
-invalidation/staleness handling (what happens when the underlying answer
-changes?), auth on the API, rate limiting, and proper metrics export
-instead of in-process counters. The core mechanism — semantic
-cache-or-generate, with a genuinely separate RAG path — is real and
-complete end to end.
