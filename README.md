@@ -99,9 +99,12 @@ and cache statistics.
 Semantically similar queries can be served directly from the cache without
 invoking the LLM.
 
-<img width="721" height="619" alt="image" src="https://github.com/user-attachments/assets/a6a2740e-003a-42eb-8d40-559f9afe0d06" />
 
-<img width="940" height="548" alt="image" src="https://github.com/user-attachments/assets/bf6b08ed-f7c4-42be-9a0f-f79c40538ac3" />
+
+<img width="940" height="819" alt="image" src="https://github.com/user-attachments/assets/932d8d5f-5e45-4c0f-a8af-c2154c809be8" />
+
+<img width="940" height="514" alt="image" src="https://github.com/user-attachments/assets/5c7b66cb-c449-43c3-8fde-203d139c58ec" />
+
 
 A cache hit returns the matched query, similarity score, response latency,
 and `provider: cache`.
