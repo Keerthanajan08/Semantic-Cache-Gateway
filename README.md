@@ -80,6 +80,52 @@ in an interview).
   point `REDIS_URL` at a real instance for something you'd actually
   deploy.
 
+## Demo
+
+### API
+
+The gateway exposes a simple FastAPI interface for health checks, querying,
+and cache statistics.
+
+<img width="903" height="509" alt="image" src="https://github.com/user-attachments/assets/1f1a7d86-25da-4421-90b5-fa01267693ca" />
+
+
+- `GET /health` — health check and active LLM provider
+- `POST /query` — submit a query and receive a cached or generated response
+- `GET /stats` — view cache performance statistics
+
+### Semantic Cache Hit
+
+Semantically similar queries can be served directly from the cache without
+invoking the LLM.
+
+<img width="721" height="619" alt="image" src="https://github.com/user-attachments/assets/a6a2740e-003a-42eb-8d40-559f9afe0d06" />
+
+<img width="940" height="548" alt="image" src="https://github.com/user-attachments/assets/bf6b08ed-f7c4-42be-9a0f-f79c40538ac3" />
+
+A cache hit returns the matched query, similarity score, response latency,
+and `provider: cache`.
+
+### Cache Miss + RAG
+
+When no sufficiently similar cached query exists, the gateway falls back to
+the RAG pipeline, retrieves relevant knowledge-base chunks, and generates a
+response through the configured LLM provider.
+
+<img width="738" height="668" alt="image" src="https://github.com/user-attachments/assets/18a679bf-c8ff-4164-a303-391d74862698" />
+
+<img width="963" height="476" alt="image" src="https://github.com/user-attachments/assets/e6fdc97f-4b22-4b0d-8d09-b149a875cd27" />
+
+
+The response includes the retrieved sources and their relevance scores.
+
+### Benchmark
+
+The demo also reports cache hit rate, cache latency, miss latency, and
+estimated LLM calls avoided across paraphrased queries.
+
+<img width="773" height="782" alt="image" src="https://github.com/user-attachments/assets/a5213dfe-db58-4150-8f9d-9483cbab560f" />
+
 ## Setup
 
 ```bash
