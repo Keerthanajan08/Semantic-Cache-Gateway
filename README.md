@@ -177,3 +177,20 @@ tests/
   test_cache.py       unit tests for cache hit/miss logic
 ```
 
+## Benchmark Results
+
+Tested semantic cache performance across 15 paraphrased support queries
+covering password reset, account lockout, 2FA, subscription cancellation,
+and refunds.
+
+| Similarity Threshold | Cache Hit Rate | Avg Cache Latency | Avg Miss Latency | LLM Calls Avoided |
+|---|---|---|---|---|
+| 0.90 | 6.7% | 13.0 ms | 64.9 ms | 1/15 |
+| 0.85 | 6.7% | 13.8 ms | 65.2 ms | 1/15 |
+| 0.80 | 6.7% | 15.8 ms | 66.2 ms | 1/15 |
+| 0.75 | 20.0% | 17.3 ms | 66.8 ms | 3/15 |
+| 0.70 | 40.0% | 13.6 ms | 65.4 ms | 6/15 |
+
+A lower similarity threshold improves cache reuse but increases the risk of
+incorrect semantic matches. This demonstrates the tradeoff between cache
+coverage and precision when tuning semantic caching systems.
