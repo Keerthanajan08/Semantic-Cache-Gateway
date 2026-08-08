@@ -150,7 +150,7 @@ In another terminal, run the demo (fires paraphrased queries, prints hit
 rate and latency numbers):
 
 ```bash
-python scripts/run_demo.py
+python /run_demo.py
 ```
 
 Run tests:
@@ -220,10 +220,9 @@ app/
   schemas.py          request/response models
   config.py           env-driven settings
   knowledge_base/      sample FAQ docs used for the RAG demo
-scripts/
-  run_demo.py         fires paraphrased queries, prints hit-rate metrics
-tests/
-  test_cache.py       unit tests for cache hit/miss logic
+
+run_demo.py         fires paraphrased queries, prints hit-rate metrics
+test_cache.py       unit tests for cache hit/miss logic
 ```
 
 ## Benchmark Results
