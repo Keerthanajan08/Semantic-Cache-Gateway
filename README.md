@@ -150,7 +150,7 @@ In another terminal, run the demo (fires paraphrased queries, prints hit
 rate and latency numbers):
 
 ```bash
-python /run_demo.py
+python run_demo.py
 ```
 
 Run tests:
@@ -197,7 +197,7 @@ dashboard — no code changes required.
 
 ## What the numbers mean
 
-Run `/run_demo.py` against your own instance and you'll get real,
+Run `run_demo.py` against your own instance and you'll get real,
 reportable metrics:
 
 - **Cache hit rate** — % of queries answered without an LLM call
