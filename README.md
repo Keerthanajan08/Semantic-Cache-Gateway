@@ -156,8 +156,17 @@ python run_demo.py
 Run tests:
 
 ```bash
-pytest
+pip install -r requirements-dev.txt
+pytest              # ~100 fast tests, <1s: fake embedder + fakeredis, no network
+pytest -m slow      # integration tests with the real embedding model
+pytest -m ""        # everything
 ```
+
+The fast suite swaps the embedding model for a deterministic bag-of-words
+fake and Redis for `fakeredis`, so it covers the cache (both backends),
+RAG retrieval, provider wiring and the full HTTP flow without loading torch.
+Known bugs are kept as strict `xfail` tests in `tests/test_known_issues.py`.
+CI runs both suites on every push (`.github/workflows/tests.yml`).
 
 ### Try it manually
 
@@ -222,7 +231,7 @@ app/
   knowledge_base/      sample FAQ docs used for the RAG demo
 
 run_demo.py         fires paraphrased queries, prints hit-rate metrics
-test_cache.py       unit tests for cache hit/miss logic
+tests/              pytest suite (cache, RAG, providers, API, real-model integration)
 ```
 
 ## Benchmark Results

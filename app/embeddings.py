@@ -6,13 +6,17 @@ host with no GPU.
 from functools import lru_cache
 
 import numpy as np
-from sentence_transformers import SentenceTransformer
 
 from app.config import settings
 
 
 class Embedder:
     def __init__(self, model_name: str):
+        # Imported lazily: sentence-transformers pulls in torch, which is slow
+        # to import. Keeping it here means modules that only need
+        # cosine_similarity (cache, rag, tests) stay lightweight.
+        from sentence_transformers import SentenceTransformer
+
         self.model = SentenceTransformer(model_name)
 
     def encode(self, text: str) -> np.ndarray:
