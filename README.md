@@ -252,7 +252,7 @@ misbehaving. See [`.env.example`](.env.example).
 | `LLM_PROVIDER` | `mock` | `mock` (offline, deterministic), `groq`, `gemini` |
 | `GROQ_MODEL` / `GEMINI_MODEL` | `openai/gpt-oss-20b` / `gemini-3.5-flash-lite` | Current models on each provider's free tier |
 | `REDIS_URL` | empty | Empty = in-memory. Set it to persist and share across replicas |
-| `EMBEDDING_MODEL` | `all-mpnet-base-v2` | Use `all-MiniLM-L6-v2` on a 512 MB host |
+| `EMBEDDING_MODEL` | `all-mpnet-base-v2` | ~810 MB RAM; `all-MiniLM-L6-v2` needs ~530 MB |
 | `CACHE_SIMILARITY_THRESHOLD` | per model | Leave unset to use the evaluated default |
 | `CACHE_TTL_SECONDS` | `86400` | Stale answers age out; `0` disables expiry |
 | `CACHE_MAX_ENTRIES` | `10000` | In-memory LRU cap. With Redis, use `maxmemory-policy` |
@@ -325,9 +325,14 @@ make eval        # regenerate eval/results.md and the chart
 | LLM | Groq or Gemini free tier | Set `LLM_PROVIDER` and the API key |
 
 The image is about 2 GB: CPU-only torch (~770 MB) plus mpnet (~420 MB).
-For a 512 MB free instance, build with
-`--build-arg EMBEDDING_MODEL=all-MiniLM-L6-v2`. The threshold adjusts
-automatically.
+
+**Memory:** the running server uses about **810 MB** with mpnet and about
+**530 MB** with MiniLM (measured RSS after warm-up), mostly torch itself.
+**Neither fits a 512 MB free instance**, so plan on a 1 GB instance. To
+trade some hit rate for memory, build with
+`--build-arg EMBEDDING_MODEL=all-MiniLM-L6-v2`; the threshold adjusts
+automatically. Getting under 512 MB would mean dropping torch for an ONNX
+runtime (see below).
 
 ## Limitations and next steps
 
@@ -346,6 +351,9 @@ automatically.
 - **The cache doesn't know when the knowledge base changes.** TTL bounds
   the staleness. Versioning the namespace with a KB hash would make
   invalidation instant.
+- **Memory is dominated by torch.** Exporting the embedding model to ONNX
+  and serving it with `onnxruntime` would cut RAM and image size
+  substantially, enough to target 512 MB hosts.
 - **Metrics are in-process.** A multi-replica deployment would export them
   via Prometheus or OpenTelemetry.
 

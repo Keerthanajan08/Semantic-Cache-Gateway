@@ -50,8 +50,8 @@ class Settings(BaseSettings):
     cache_guards: bool = True
 
     # --- Embeddings ---
-    # Lowest expected latency per request in eval/results.md. On a 512MB host,
-    # all-MiniLM-L6-v2 (~90MB, threshold 0.74) is the lightweight alternative.
+    # Lowest expected latency per request in eval/results.md (~810 MB server RSS).
+    # all-MiniLM-L6-v2 (threshold 0.74, ~530 MB RSS) is the lighter alternative.
     embedding_model: str = "all-mpnet-base-v2"
 
     # --- RAG ---
