@@ -175,6 +175,33 @@ The demo starts from an *empty* cache, so its hit rate is lower than the
 warm-cache evaluation. Latencies here use the 50 ms mock LLM; with a real
 LLM, misses cost hundreds of milliseconds more.
 
+## Screenshots
+
+All captured from a real run of the gateway (mock LLM, in-memory cache).
+
+**Interactive API docs** (`/docs`)
+
+![API docs](docs/screenshots/01-api-docs.png)
+
+**Cache hit**: a paraphrase is answered from cache (`cache_status: "hit"`,
+`X-Cache: HIT`) and matched to the earlier question, with no LLM call.
+
+![Cache hit](docs/screenshots/02-cache-hit.png)
+
+**Guard veto**: "How do I NOT reset my password?" scores 0.73, above the
+0.70 threshold, but the negation guard blocks it (`guard_vetoes: ["negation"]`),
+so it goes to RAG + LLM instead of being served the wrong answer.
+
+![Guard veto](docs/screenshots/03-guard-veto.png)
+
+**Live demo**: paraphrases hitting the cache, and trap questions blocked.
+
+![Demo run](docs/screenshots/04-demo.png)
+
+**Test suite**: 204 fast tests, 99% branch coverage.
+
+![Tests](docs/screenshots/05-tests.png)
+
 ## API
 
 Interactive docs at `/docs`.
@@ -342,6 +369,7 @@ eval/
   guard_probes.json     trap pairs that must never share an answer
   results.md            generated: model comparison, threshold sweep, guard probes
   threshold_sweep.png   generated chart
+docs/screenshots/       README screenshots from a real run
 scripts/
   evaluate_threshold.py threshold and model evaluation (+ --check for CI)
   run_demo.py           live demo against a running gateway
