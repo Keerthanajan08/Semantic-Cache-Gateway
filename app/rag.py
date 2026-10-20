@@ -1,26 +1,22 @@
 """
-Genuine RAG path, used only on cache misses:
+Retrieval-augmented generation, used only on cache misses:
 
-  query -> embed -> retrieve top-k relevant chunks from the knowledge base
-        -> build an augmented prompt (query + retrieved context)
-        -> send to the LLM provider
-        -> cache the (query, answer) pair for next time
+    query vector -> top-k knowledge-base chunks -> grounded prompt -> LLM
 
-This is deliberately separate from the cache layer. The cache is a
-shortcut that bypasses generation entirely on a hit; RAG is what happens
-when there's no shortcut and a real answer has to be generated. Keeping
-them as two distinct stages is what makes each one easy to reason about
-and to explain.
+Deliberately separate from the cache. The cache is a shortcut that skips
+generation entirely; RAG is what runs when there is no shortcut. Keeping
+them as two stages makes each one easy to test and reason about.
 """
-import os
+
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
+import numpy.typing as npt
 
 from app.config import settings
-from app.embeddings import cosine_similarity, get_embedder
+from app.embeddings import Vector, get_embedder
 from app.schemas import SourceChunk
 
 KB_DIR = Path(__file__).parent / "knowledge_base"
@@ -30,48 +26,48 @@ KB_DIR = Path(__file__).parent / "knowledge_base"
 class KBChunk:
     doc_id: str
     text: str
-    vector: np.ndarray
+    vector: Vector
 
 
 class KnowledgeBase:
-    def __init__(self, directory: Path):
+    def __init__(self, directory: Path) -> None:
         self.chunks: list[KBChunk] = []
+        self._matrix: npt.NDArray[np.float32] = np.zeros((0, 0), dtype=np.float32)
         self._load(directory)
 
     def _load(self, directory: Path) -> None:
-        embedder = get_embedder()
-        texts, doc_ids = [], []
-
-        for filename in sorted(os.listdir(directory)):
-            if not filename.endswith(".md"):
-                continue
-            path = directory / filename
+        texts: list[str] = []
+        doc_ids: list[str] = []
+        for path in sorted(directory.glob("*.md")):
             content = path.read_text(encoding="utf-8").strip()
-            # Split each file into paragraph-level chunks — simple and
-            # transparent, appropriate for a knowledge base this small.
+            # Paragraph-level chunks: simple, transparent, and each one is a
+            # self-contained answer in this FAQ-style knowledge base.
             for i, para in enumerate(p.strip() for p in content.split("\n\n")):
                 if para:
                     texts.append(para)
-                    doc_ids.append(f"{filename}#{i}")
+                    doc_ids.append(f"{path.name}#{i}")
 
         if not texts:
             return
 
-        vectors = embedder.encode_batch(texts)
+        self._matrix = get_embedder().encode_batch(texts)
         self.chunks = [
-            KBChunk(doc_id=doc_ids[i], text=texts[i], vector=vectors[i])
-            for i in range(len(texts))
+            KBChunk(doc_id=d, text=t, vector=v)
+            for d, t, v in zip(doc_ids, texts, self._matrix, strict=True)
         ]
 
-    def retrieve(self, query_vector: np.ndarray, top_k: int) -> list[SourceChunk]:
-        scored = [
-            (chunk, cosine_similarity(query_vector, chunk.vector))
-            for chunk in self.chunks
-        ]
-        scored.sort(key=lambda pair: pair[1], reverse=True)
+    def retrieve(self, query_vector: Vector, top_k: int) -> list[SourceChunk]:
+        if not self.chunks:
+            return []
+        scores = self._matrix @ query_vector
+        top = np.argsort(-scores)[:top_k]
         return [
-            SourceChunk(doc_id=c.doc_id, text=c.text, score=round(s, 4))
-            for c, s in scored[:top_k]
+            SourceChunk(
+                doc_id=self.chunks[i].doc_id,
+                text=self.chunks[i].text,
+                score=round(float(scores[i]), 4),
+            )
+            for i in top
         ]
 
 
@@ -91,8 +87,6 @@ def build_augmented_prompt(query: str, sources: list[SourceChunk]) -> str:
     )
 
 
-def answer_with_rag(query: str, query_vector: np.ndarray):
-    kb = get_knowledge_base()
-    sources = kb.retrieve(query_vector, top_k=settings.rag_top_k)
-    prompt = build_augmented_prompt(query, sources)
-    return prompt, sources
+def retrieve_and_build_prompt(query: str, query_vector: Vector) -> tuple[str, list[SourceChunk]]:
+    sources = get_knowledge_base().retrieve(query_vector, top_k=settings.rag_top_k)
+    return build_augmented_prompt(query, sources), sources

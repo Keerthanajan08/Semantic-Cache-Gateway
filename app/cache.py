@@ -1,140 +1,311 @@
 """
-Semantic cache: on a query, embed it and compare against every previously
-cached query's embedding. If the closest one is above the similarity
-threshold, reuse its answer instead of calling the LLM.
+Semantic cache: embed a query, compare it with every cached query's
+embedding, and reuse the stored answer if the best match clears the
+similarity threshold.
 
-Two backends behind one interface:
-  - InMemoryCache: a Python dict. Zero setup, resets on restart. Perfect
-    for local dev and for running this project with no external services.
-  - RedisCache: persists entries as Redis hashes (query, answer, vector
-    stored as JSON). Vector search is done in Python at read time — this
-    avoids requiring the RediSearch module, which keeps it compatible with
-    any plain Redis instance (including free hosted tiers).
+Two backends behind one interface (BaseCache):
 
-At the scale a portfolio/demo project runs at (hundreds to low thousands
-of cached entries), scanning in Python is fast enough that it isn't worth
-the added complexity of an ANN index. That tradeoff is worth being able to
-explain, not hidden.
+* InMemoryCache: zero setup, resets on restart. Embeddings live in one
+  contiguous (N, D) float32 matrix, so a lookup is a single matrix-vector
+  product instead of a Python loop. Bounded by TTL and an LRU entry cap.
+* RedisCache: persistent and shareable between replicas. Works on any plain
+  Redis (no RediSearch module), so free hosted tiers are fine. All entries
+  are fetched in ONE pipelined round trip and scored with the same
+  vectorised maths. Expiry is native Redis TTL.
+
+Both do exact (brute-force) nearest-neighbour search. At the scale this
+project targets (up to ~10k entries) that is a few milliseconds, and it is
+exact. Past that, the right move is an ANN index (Redis vector sets, FAISS,
+pgvector) behind this same interface; nothing else in the app would change.
 """
-import json
+
+from __future__ import annotations
+
+import base64
+import re
+import threading
 import time
-from dataclasses import dataclass
-from typing import Optional
+import uuid
+from abc import ABC, abstractmethod
+from collections import OrderedDict
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
+import numpy.typing as npt
 
 from app.config import settings
-from app.embeddings import cosine_similarity
+
+if TYPE_CHECKING:
+    from app.embeddings import Vector
+
+Clock = Callable[[], float]
+AcceptFn = Callable[["CacheEntry"], bool]
 
 
 @dataclass
 class CacheEntry:
     query: str
     answer: str
-    vector: np.ndarray
+    vector: Vector
     created_at: float
 
 
 @dataclass
 class CacheLookupResult:
     hit: bool
-    entry: Optional[CacheEntry] = None
+    entry: CacheEntry | None = None
+    # Best similarity seen (of the accepted entry on a hit, of any entry on a
+    # miss), clamped to [0, 1] for readability.
     similarity: float = 0.0
+    # Candidates above the threshold that the `accept` callback vetoed.
+    rejected: list[CacheEntry] = field(default_factory=list)
 
 
-class BaseCache:
-    def lookup(self, vector: np.ndarray) -> CacheLookupResult:
-        raise NotImplementedError
+def _select(
+    entries: list[CacheEntry],
+    scores: npt.NDArray[np.float32],
+    threshold: float,
+    accept: AcceptFn | None,
+) -> tuple[CacheLookupResult, int | None]:
+    """
+    Pick the best-scoring entry above `threshold` that `accept` allows.
+    Returns the result and the chosen entry's index (None on a miss).
+    """
+    if len(entries) == 0:
+        return CacheLookupResult(hit=False), None
 
-    def store(self, query: str, answer: str, vector: np.ndarray) -> None:
-        raise NotImplementedError
+    best = float(np.max(scores))
+    rejected: list[CacheEntry] = []
+    for idx in np.argsort(-scores):
+        score = float(scores[idx])
+        if score < threshold:
+            break
+        entry = entries[int(idx)]
+        if accept is None or accept(entry):
+            hit = CacheLookupResult(hit=True, entry=entry, similarity=score, rejected=rejected)
+            return hit, int(idx)
+        rejected.append(entry)
+    return CacheLookupResult(hit=False, similarity=max(best, 0.0), rejected=rejected), None
 
-    def size(self) -> int:
-        raise NotImplementedError
+
+class BaseCache(ABC):
+    threshold: float
+
+    @abstractmethod
+    def lookup(self, vector: Vector, accept: AcceptFn | None = None) -> CacheLookupResult:
+        """Best entry with similarity >= threshold for which accept(entry) is true."""
+
+    @abstractmethod
+    def store(self, query: str, answer: str, vector: Vector) -> None: ...
+
+    @abstractmethod
+    def size(self) -> int: ...
+
+    @abstractmethod
+    def clear(self) -> int:
+        """Remove every entry; returns how many were removed."""
+
+    @property
+    @abstractmethod
+    def backend(self) -> str: ...
 
 
 class InMemoryCache(BaseCache):
-    def __init__(self, threshold: float):
+    def __init__(
+        self,
+        threshold: float,
+        ttl_seconds: int = 0,
+        max_entries: int = 10_000,
+        clock: Clock = time.time,
+    ) -> None:
         self.threshold = threshold
-        self._entries: list[CacheEntry] = []
+        self.ttl_seconds = ttl_seconds
+        self.max_entries = max_entries
+        self._clock = clock
+        self._lock = threading.RLock()
+        # Insertion/recency order for LRU eviction (most recently used last).
+        self._entries: OrderedDict[int, CacheEntry] = OrderedDict()
+        self._next_id = 0
+        # Matrix rows are rebuilt only when the set of entries changes, not on
+        # every hit, so LRU bookkeeping stays O(1).
+        self._row_ids: list[int] = []
+        self._matrix: npt.NDArray[np.float32] | None = None
 
-    def lookup(self, vector: np.ndarray) -> CacheLookupResult:
-        best_entry, best_score = None, -1.0
-        for entry in self._entries:
-            score = cosine_similarity(vector, entry.vector)
-            if score > best_score:
-                best_entry, best_score = entry, score
+    @property
+    def backend(self) -> str:
+        return "memory"
 
-        if best_entry is not None and best_score >= self.threshold:
-            return CacheLookupResult(hit=True, entry=best_entry, similarity=best_score)
-        return CacheLookupResult(hit=False, similarity=max(best_score, 0.0))
+    def _expire(self) -> None:
+        if not self.ttl_seconds:
+            return
+        cutoff = self._clock() - self.ttl_seconds
+        expired = [k for k, e in self._entries.items() if e.created_at <= cutoff]
+        for key in expired:
+            del self._entries[key]
+        if expired:
+            self._matrix = None
 
-    def store(self, query: str, answer: str, vector: np.ndarray) -> None:
-        self._entries.append(CacheEntry(query, answer, vector, time.time()))
+    def _rows(self) -> tuple[list[int], npt.NDArray[np.float32]]:
+        if self._matrix is None:
+            self._row_ids = list(self._entries)
+            self._matrix = (
+                np.stack([self._entries[k].vector for k in self._row_ids])
+                if self._row_ids
+                else np.zeros((0, 0), dtype=np.float32)
+            )
+        return self._row_ids, self._matrix
+
+    def lookup(self, vector: Vector, accept: AcceptFn | None = None) -> CacheLookupResult:
+        with self._lock:
+            self._expire()
+            row_ids, matrix = self._rows()
+            if not row_ids:
+                return CacheLookupResult(hit=False)
+            scores = matrix @ vector
+            entries = [self._entries[k] for k in row_ids]
+            result, idx = _select(entries, scores, self.threshold, accept)
+            if idx is not None:
+                self._entries.move_to_end(row_ids[idx])  # mark as recently used
+            return result
+
+    def store(self, query: str, answer: str, vector: Vector) -> None:
+        with self._lock:
+            self._entries[self._next_id] = CacheEntry(query, answer, vector, self._clock())
+            self._next_id += 1
+            while len(self._entries) > self.max_entries:
+                self._entries.popitem(last=False)  # least recently used
+            self._matrix = None
 
     def size(self) -> int:
-        return len(self._entries)
+        with self._lock:
+            self._expire()
+            return len(self._entries)
+
+    def clear(self) -> int:
+        with self._lock:
+            removed = len(self._entries)
+            self._entries.clear()
+            self._matrix = None
+            return removed
 
 
 class RedisCache(BaseCache):
-    """Same semantics as InMemoryCache, backed by Redis hashes."""
+    """
+    Entries are Redis hashes under `semcache:<namespace>:<uuid>`. The
+    namespace is the embedding model name: vectors from different models
+    live in different spaces and must never be compared, so swapping
+    EMBEDDING_MODEL can't serve answers matched in the wrong space.
+    """
 
-    KEY_PREFIX = "semcache:"
+    def __init__(
+        self,
+        redis_url: str,
+        threshold: float,
+        ttl_seconds: int = 0,
+        namespace: str = "default",
+        client: Any = None,
+    ) -> None:
+        if client is None:
+            import redis  # lazy: not needed for the in-memory backend
 
-    def __init__(self, redis_url: str, threshold: float):
-        import redis  # imported lazily so redis isn't required for in-memory mode
-
-        self.client = redis.from_url(redis_url, decode_responses=True)
+            client = redis.from_url(redis_url, decode_responses=True)
+        self.client = client
         self.threshold = threshold
+        self.ttl_seconds = ttl_seconds
+        safe_ns = re.sub(r"[^A-Za-z0-9._-]", "_", namespace)
+        self.key_prefix = f"semcache:{safe_ns}:"
 
-    def _all_keys(self):
-        return self.client.scan_iter(match=f"{self.KEY_PREFIX}*")
+    @property
+    def backend(self) -> str:
+        return "redis"
 
-    def lookup(self, vector: np.ndarray) -> CacheLookupResult:
-        best_entry, best_score = None, -1.0
-        for key in self._all_keys():
-            raw = self.client.hgetall(key)
-            if not raw:
+    @staticmethod
+    def _encode_vector(vector: Vector) -> str:
+        return base64.b64encode(np.asarray(vector, dtype=np.float32).tobytes()).decode("ascii")
+
+    @staticmethod
+    def _decode_vector(raw: str) -> Vector:
+        return np.frombuffer(base64.b64decode(raw), dtype=np.float32).copy()
+
+    def _keys(self) -> list[str]:
+        return list(self.client.scan_iter(match=f"{self.key_prefix}*", count=500))
+
+    def _load_entries(self) -> list[CacheEntry]:
+        keys = self._keys()
+        if not keys:
+            return []
+        pipe = self.client.pipeline(transaction=False)
+        for key in keys:
+            pipe.hgetall(key)
+        entries = []
+        for raw in pipe.execute():  # one network round trip for every entry
+            if not raw:  # expired between SCAN and HGETALL
                 continue
-            cached_vec = np.array(json.loads(raw["vector"]), dtype=np.float32)
-            score = cosine_similarity(vector, cached_vec)
-            if score > best_score:
-                best_entry = CacheEntry(
+            entries.append(
+                CacheEntry(
                     query=raw["query"],
                     answer=raw["answer"],
-                    vector=cached_vec,
+                    vector=self._decode_vector(raw["vector"]),
                     created_at=float(raw["created_at"]),
                 )
-                best_score = score
+            )
+        return entries
 
-        if best_entry is not None and best_score >= self.threshold:
-            return CacheLookupResult(hit=True, entry=best_entry, similarity=best_score)
-        return CacheLookupResult(hit=False, similarity=max(best_score, 0.0))
+    def lookup(self, vector: Vector, accept: AcceptFn | None = None) -> CacheLookupResult:
+        entries = self._load_entries()
+        if not entries:
+            return CacheLookupResult(hit=False)
+        scores = np.stack([e.vector for e in entries]) @ vector
+        result, _ = _select(entries, scores, self.threshold, accept)
+        return result
 
-    def store(self, query: str, answer: str, vector: np.ndarray) -> None:
-        key = f"{self.KEY_PREFIX}{int(time.time() * 1000)}:{hash(query) & 0xffffffff}"
-        self.client.hset(
+    def store(self, query: str, answer: str, vector: Vector) -> None:
+        key = f"{self.key_prefix}{uuid.uuid4().hex}"
+        pipe = self.client.pipeline(transaction=True)
+        pipe.hset(
             key,
             mapping={
                 "query": query,
                 "answer": answer,
-                "vector": json.dumps(vector.tolist()),
+                "vector": self._encode_vector(vector),
                 "created_at": time.time(),
             },
         )
+        if self.ttl_seconds:
+            pipe.expire(key, self.ttl_seconds)
+        pipe.execute()
 
     def size(self) -> int:
-        return sum(1 for _ in self._all_keys())
+        return len(self._keys())
+
+    def clear(self) -> int:
+        keys = self._keys()
+        if keys:
+            self.client.delete(*keys)
+        return len(keys)
 
 
-_cache_instance: Optional[BaseCache] = None
+_cache_instance: BaseCache | None = None
+_cache_lock = threading.Lock()
 
 
 def get_cache() -> BaseCache:
     global _cache_instance
-    if _cache_instance is None:
-        if settings.redis_url:
-            _cache_instance = RedisCache(settings.redis_url, settings.cache_similarity_threshold)
-        else:
-            _cache_instance = InMemoryCache(settings.cache_similarity_threshold)
-    return _cache_instance
+    with _cache_lock:
+        if _cache_instance is None:
+            if settings.redis_url:
+                _cache_instance = RedisCache(
+                    settings.redis_url,
+                    threshold=settings.similarity_threshold,
+                    ttl_seconds=settings.cache_ttl_seconds,
+                    namespace=settings.embedding_model,
+                )
+            else:
+                _cache_instance = InMemoryCache(
+                    threshold=settings.similarity_threshold,
+                    ttl_seconds=settings.cache_ttl_seconds,
+                    max_entries=settings.cache_max_entries,
+                )
+        return _cache_instance

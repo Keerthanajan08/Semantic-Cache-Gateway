@@ -20,7 +20,7 @@ def stub_sentence_transformers(monkeypatch):
             self.encode_kwargs = []
             created.append(self)
 
-        def encode(self, texts, normalize_embeddings=False):
+        def encode(self, texts, normalize_embeddings=False, **kwargs):
             self.encode_kwargs.append({"normalize_embeddings": normalize_embeddings})
             if isinstance(texts, str):
                 return [3.0, 4.0]
@@ -65,11 +65,17 @@ class TestEmbedder:
         assert vecs.shape == (3, 2)
         assert vecs.dtype == np.float32
 
-    def test_get_embedder_loads_configured_model_once(self, stub_sentence_transformers, monkeypatch):
+    def test_get_embedder_loads_configured_model_once(
+        self, stub_sentence_transformers, monkeypatch
+    ):
         monkeypatch.setattr(settings, "embedding_model", "configured-model")
         assert get_embedder() is get_embedder()
         assert len(stub_sentence_transformers) == 1
         assert stub_sentence_transformers[0].name == "configured-model"
+
+
+def test_embedder_remembers_model_name(stub_sentence_transformers):
+    assert Embedder("m").model_name == "m"
 
 
 def test_importing_embeddings_does_not_load_torch():

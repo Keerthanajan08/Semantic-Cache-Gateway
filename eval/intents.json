@@ -1,0 +1,138 @@
+{
+  "_comment": "Hand-labelled support questions. Questions under the same key share one correct answer; a cache hit across keys serves a WRONG answer. Several intents are deliberate near-misses of each other (reset vs change password, enable vs disable 2FA, cancel plan vs delete account) because those are where semantic caches fail. Includes casual phrasing, typos and missing punctuation, as real users write.",
+
+  "reset_forgotten_password": [
+    "How do I reset my password?",
+    "I forgot my password, how can I reset it",
+    "forgot password help",
+    "what's the process to recover a forgotten password",
+    "I can't remember my password",
+    "password reset link please",
+    "how can I get back into my account if I forgot the password",
+    "where do I reset my password",
+    "forgot my pasword",
+    "reset password",
+    "I don't remember my login password, what do I do",
+    "how to recover my account password"
+  ],
+  "change_known_password": [
+    "How do I change my password?",
+    "I want to update my current password to a new one",
+    "change password from settings",
+    "how can I set a new password while logged in",
+    "update my password",
+    "I know my password but want a stronger one",
+    "where can I change my existing password",
+    "how to modify my password in account settings"
+  ],
+  "account_locked": [
+    "Why is my account locked?",
+    "my account got locked after failed logins",
+    "locked out after too many login attempts",
+    "how long does an account lockout last",
+    "I entered the wrong password too many times and now I'm blocked",
+    "how do I unlock my account",
+    "account temporarily locked what now",
+    "it says my account is locked for security reasons",
+    "can support unlock my account right away"
+  ],
+  "enable_2fa": [
+    "How do I enable two-factor authentication?",
+    "how to turn on 2FA",
+    "set up two factor auth on my account",
+    "I want to add an authenticator app to my login",
+    "enable two step verification",
+    "how do I activate 2FA",
+    "setup 2fa",
+    "how can I secure my account with an authenticator app",
+    "is there a way to require a code when I log in"
+  ],
+  "disable_2fa": [
+    "How do I disable two-factor authentication?",
+    "how to turn off 2FA",
+    "remove two step verification from my account",
+    "I want to stop using an authenticator app for login",
+    "disable 2fa",
+    "how can I deactivate two factor auth"
+  ],
+  "lost_2fa_device": [
+    "I lost my phone with my authenticator app",
+    "my 2FA device is gone, how do I log in",
+    "how do I use a backup code",
+    "can't get 2FA codes anymore because I changed phones",
+    "new phone, authenticator codes are lost",
+    "where are my 2fa recovery codes"
+  ],
+  "change_email": [
+    "How do I change the email on my account?",
+    "update my email address",
+    "I want to use a different email for login",
+    "how to switch my account email",
+    "change account email address",
+    "my old email is no longer valid, how do I replace it",
+    "how do I verify a new email address on my profile"
+  ],
+  "unexpected_logout": [
+    "Why do I keep getting logged out?",
+    "my session keeps expiring",
+    "I get signed out every few minutes",
+    "how long do login sessions last",
+    "the app keeps logging me out",
+    "why doesn't it remember me when I log in"
+  ],
+  "cancel_subscription": [
+    "How do I cancel my subscription?",
+    "I want to cancel my plan",
+    "how to stop my subscription from renewing",
+    "cancel my membership",
+    "how do I turn off auto-renewal",
+    "end my paid plan",
+    "unsubscribe from the paid plan",
+    "if I cancel do I keep access until the end of the month",
+    "stop billing me every month"
+  ],
+  "delete_account": [
+    "How do I delete my account?",
+    "permanently remove my account and data",
+    "I want to close my account for good",
+    "how can I erase my profile completely",
+    "delete all my data and account",
+    "how to permanently deactivate my profile"
+  ],
+  "refund": [
+    "Do you offer refunds?",
+    "can I get my money back",
+    "what is your refund policy",
+    "I was charged twice, can I get a refund",
+    "how long does a refund take",
+    "request a refund",
+    "refund for a duplicate charge",
+    "when will my refund show up on my card",
+    "are refunds given for partial months"
+  ],
+  "update_card": [
+    "How do I update my credit card?",
+    "change my payment method",
+    "my card expired, how do I add a new one",
+    "replace the card on file",
+    "update billing card details",
+    "use a different card for my subscription",
+    "where do I edit my payment info"
+  ],
+  "failed_renewal": [
+    "What happens if my renewal payment fails?",
+    "my subscription payment was declined",
+    "the charge for my renewal didn't go through",
+    "will I be downgraded if my card is declined",
+    "how many times do you retry a failed payment",
+    "payment failed on renewal, will I lose access"
+  ],
+  "enterprise_invoicing": [
+    "Can I pay by invoice instead of card?",
+    "do you support annual invoicing for enterprise",
+    "how do I switch to an invoiced contract",
+    "invoice billing for large teams",
+    "we need purchase order and invoice payment",
+    "talk to sales about an annual contract"
+  ]
+}

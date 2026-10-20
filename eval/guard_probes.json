@@ -1,0 +1,12 @@
+{
+  "_comment": "Pairs where the second question must NOT be served the first one's answer, even though embeddings rate them as very similar.",
+  "pairs": [
+    ["How do I reset my password?", "How do I NOT reset my password?"],
+    ["Can I get a refund?", "Why can't I get a refund?"],
+    ["Should I enable two-factor authentication?", "Should I not enable two-factor authentication?"],
+    ["My account is locked", "My account is not locked but I can't log in"],
+    ["Refund for order 1234", "Refund for order 5678"],
+    ["What does the 10 seat plan cost?", "What does the 50 seat plan cost?"],
+    ["My card was charged $20", "My card was charged $200"]
+  ]
+}

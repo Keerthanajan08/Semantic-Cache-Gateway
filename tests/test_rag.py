@@ -2,7 +2,13 @@ import pytest
 
 from app import rag
 from app.config import settings
-from app.rag import KB_DIR, KnowledgeBase, answer_with_rag, build_augmented_prompt, get_knowledge_base
+from app.rag import (
+    KB_DIR,
+    KnowledgeBase,
+    build_augmented_prompt,
+    get_knowledge_base,
+    retrieve_and_build_prompt,
+)
 from app.schemas import SourceChunk
 from tests.conftest import fake_embed
 
@@ -36,6 +42,12 @@ class TestKnowledgeBaseLoading:
         kb = KnowledgeBase(tmp_path)
         assert [c.text for c in kb.chunks] == ["first", "second"]
 
+    def test_subdirectories_and_other_extensions_are_ignored(self, fake_embedder, tmp_path):
+        (tmp_path / "nested").mkdir()
+        (tmp_path / "nested" / "deep.md").write_text("should not load", encoding="utf-8")
+        (tmp_path / "top.md").write_text("loaded", encoding="utf-8")
+        assert [c.text for c in KnowledgeBase(tmp_path).chunks] == ["loaded"]
+
     def test_empty_directory_gives_empty_kb(self, fake_embedder, tmp_path):
         kb = KnowledgeBase(tmp_path)
         assert kb.chunks == []
@@ -64,7 +76,7 @@ class TestRetrieval:
         scores = [r.score for r in kb.retrieve(fake_embed("password login"), top_k=3)]
         assert scores == sorted(scores, reverse=True)
 
-    @pytest.mark.parametrize("top_k, expected", [(1, 1), (2, 2), (3, 3), (10, 3)])
+    @pytest.mark.parametrize(("top_k", "expected"), [(1, 1), (2, 2), (3, 3), (10, 3)])
     def test_respects_top_k(self, fake_embedder, kb_dir, top_k, expected):
         kb = KnowledgeBase(kb_dir)
         assert len(kb.retrieve(fake_embed("password"), top_k=top_k)) == expected
@@ -94,16 +106,16 @@ class TestPromptBuilding:
         assert "instead of guessing" in prompt
 
 
-class TestAnswerWithRag:
+class TestRetrieveAndBuildPrompt:
     def test_uses_configured_top_k(self, fake_embedder, monkeypatch):
         monkeypatch.setattr(settings, "rag_top_k", 2)
-        prompt, sources = answer_with_rag("reset password", fake_embed("reset password"))
+        prompt, sources = retrieve_and_build_prompt("reset password", fake_embed("reset password"))
         assert len(sources) == 2
         assert "Question: reset password" in prompt
 
     def test_sources_appear_in_prompt_in_rank_order(self, fake_embedder):
         q = "how do I reset my password"
-        prompt, sources = answer_with_rag(q, fake_embed(q))
+        prompt, sources = retrieve_and_build_prompt(q, fake_embed(q))
         positions = [prompt.index(f"[{s.doc_id}]") for s in sources]
         assert positions == sorted(positions)
 
@@ -114,7 +126,7 @@ class TestAnswerWithRag:
             KnowledgeBase, "_load", lambda self, d: (loads.append(d), original_load(self, d))
         )
         for _ in range(3):
-            answer_with_rag("q", fake_embed("q"))
+            retrieve_and_build_prompt("q", fake_embed("q"))
         assert len(loads) == 1
         assert get_knowledge_base() is get_knowledge_base()
         assert rag.KB_DIR.name == "knowledge_base"

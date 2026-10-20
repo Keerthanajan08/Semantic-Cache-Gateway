@@ -1,5 +1,11 @@
 venv/
+.venv/
 __pycache__/
 *.pyc
-.pytest_cache/
 .env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/

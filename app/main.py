@@ -1,125 +1,177 @@
 """
-Semantic Cache Gateway
-======================
+Semantic Cache Gateway: HTTP layer.
 
-Flow for every incoming query:
-
-  1. Embed the query.
-  2. Check the semantic cache for a past query with cosine similarity
-     above CACHE_SIMILARITY_THRESHOLD.
-       -> HIT: return the cached answer immediately. No LLM call.
-       -> MISS: continue to step 3.
-  3. Retrieve relevant chunks from the knowledge base (RAG) and build an
-     augmented prompt.
-  4. Call the LLM provider (mock/Groq/Gemini — config-driven).
-  5. Store the (query, answer) pair in the cache for future hits.
-  6. Return the answer either way, with cache_hit / similarity / latency
-     so the caller (and your resume metrics) can see exactly what
-     happened.
+The request flow itself lives in app/gateway.py; this module only handles
+HTTP concerns: validation, request IDs, response headers, error mapping,
+start-up warm-up and logging.
 
 Run it:
     uvicorn app.main:app --reload
 """
-import time
 
-from fastapi import FastAPI
+import logging
+import secrets
+import uuid
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
+
+from fastapi import FastAPI, Header, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, RedirectResponse
 
+from app import gateway
 from app.cache import get_cache
 from app.config import settings
-from app.embeddings import get_embedder
-from app.llm_providers import get_llm_provider
-from app.rag import answer_with_rag
-from app.schemas import QueryRequest, QueryResponse, StatsResponse
+from app.llm_providers import LLMConfigurationError, LLMProviderError
+from app.schemas import (
+    ClearCacheResponse,
+    ErrorResponse,
+    HealthResponse,
+    QueryRequest,
+    QueryResponse,
+    StatsResponse,
+)
+from app.stats import stats
+
+VERSION = "1.0.0"
+
+logging.basicConfig(
+    level=settings.log_level,
+    format="%(asctime)s %(levelname)s %(name)s %(message)s",
+)
+log = logging.getLogger("semantic_cache_gateway")
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    if settings.warmup_on_startup:
+        log.info("warming up provider=%s model=%s", settings.llm_provider, settings.embedding_model)
+        gateway.warm_up()
+    yield
+
 
 app = FastAPI(
     title="Semantic Cache Gateway",
-    description="An LLM gateway that caches semantically similar queries to cut cost and latency.",
-    version="0.1.0",
+    description=(
+        "An LLM gateway that serves semantically similar questions from a cache "
+        "and falls back to retrieval-augmented generation on a miss."
+    ),
+    version=VERSION,
+    lifespan=lifespan,
+    responses={502: {"model": ErrorResponse}, 503: {"model": ErrorResponse}},
 )
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=settings.cors_allow_origins,
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
+    expose_headers=["X-Request-ID", "X-Cache", "X-Response-Time-Ms"],
 )
 
-# Simple in-process counters for the /stats endpoint. Good enough for a
-# single-instance demo; a production version would push these to a real
-# metrics backend (Prometheus, etc.) instead.
-_stats = {
-    "total_queries": 0,
-    "cache_hits": 0,
-    "cache_misses": 0,
-    "hit_latencies_ms": [],
-    "miss_latencies_ms": [],
-}
+
+@app.middleware("http")
+async def request_id_middleware(
+    request: Request, call_next: Callable[[Request], Awaitable[Response]]
+) -> Response:
+    # Honour an upstream ID (load balancer, client) so logs correlate end to end.
+    request_id = request.headers.get("X-Request-ID") or uuid.uuid4().hex
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    return response
 
 
-@app.get("/health")
-def health():
-    return {"status": "ok", "llm_provider": settings.llm_provider}
+def _error(request: Request, code: int, detail: str) -> JSONResponse:
+    request_id = getattr(request.state, "request_id", None)
+    body = ErrorResponse(detail=detail, request_id=request_id).model_dump()
+    return JSONResponse(status_code=code, content=body)
 
 
-@app.post("/query", response_model=QueryResponse)
-def query(request: QueryRequest):
-    start = time.perf_counter()
+@app.exception_handler(LLMProviderError)
+async def llm_error_handler(request: Request, exc: LLMProviderError) -> JSONResponse:
+    log.warning("llm_error request_id=%s error=%s", request.state.request_id, exc)
+    return _error(request, status.HTTP_502_BAD_GATEWAY, "Upstream LLM provider failed.")
 
-    embedder = get_embedder()
+
+@app.exception_handler(LLMConfigurationError)
+async def llm_config_handler(request: Request, exc: LLMConfigurationError) -> JSONResponse:
+    log.error("llm_misconfigured error=%s", exc)
+    return _error(request, status.HTTP_503_SERVICE_UNAVAILABLE, str(exc))
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse(url="/docs")
+
+
+@app.get("/health", response_model=HealthResponse, tags=["ops"])
+def health() -> HealthResponse:
     cache = get_cache()
-    query_vector = embedder.encode(request.query)
+    try:
+        cache.size()
+        reachable = True
+    except Exception:  # e.g. Redis down: report it rather than 500
+        reachable = False
+    return HealthResponse(
+        status="ok" if reachable else "degraded",
+        llm_provider=settings.llm_provider,
+        cache_backend=cache.backend,
+        cache_reachable=reachable,
+        embedding_model=settings.embedding_model,
+        version=VERSION,
+    )
 
-    lookup = cache.lookup(query_vector)
-    _stats["total_queries"] += 1
 
-    if lookup.hit:
-        latency_ms = (time.perf_counter() - start) * 1000
-        _stats["cache_hits"] += 1
-        _stats["hit_latencies_ms"].append(latency_ms)
-        return QueryResponse(
-            answer=lookup.entry.answer,
-            cache_hit=True,
-            matched_query=lookup.entry.query,
-            similarity=round(lookup.similarity, 4),
-            latency_ms=round(latency_ms, 2),
-            sources=[],
-            provider="cache",
-        )
+@app.post("/query", response_model=QueryResponse, tags=["gateway"])
+def query(body: QueryRequest, request: Request, response: Response) -> QueryResponse:
+    result = gateway.handle_query(body.query, use_cache=body.use_cache)
+    request_id: str = request.state.request_id
 
-    # Cache miss -> genuine RAG path -> LLM call -> cache the result.
-    prompt, sources = answer_with_rag(request.query, query_vector)
-    llm = get_llm_provider()
-    answer = llm.generate(prompt)
-    cache.store(request.query, answer, query_vector)
-
-    latency_ms = (time.perf_counter() - start) * 1000
-    _stats["cache_misses"] += 1
-    _stats["miss_latencies_ms"].append(latency_ms)
-
+    response.headers["X-Cache"] = result.cache_status.upper()
+    response.headers["X-Response-Time-Ms"] = str(result.latency_ms)
+    log.info(
+        "query request_id=%s cache=%s similarity=%s vetoes=%s latency_ms=%s",
+        request_id,
+        result.cache_status,
+        result.similarity,
+        ",".join(result.guard_vetoes) or "-",
+        result.latency_ms,
+    )
     return QueryResponse(
-        answer=answer,
-        cache_hit=False,
-        similarity=round(lookup.similarity, 4),
-        latency_ms=round(latency_ms, 2),
-        sources=sources,
-        provider=llm.name,
+        answer=result.answer,
+        cache_status=result.cache_status,
+        cache_hit=result.cache_hit,
+        matched_query=result.matched_query,
+        similarity=result.similarity,
+        guard_vetoes=result.guard_vetoes,
+        latency_ms=result.latency_ms,
+        sources=result.sources,
+        provider=result.provider,
+        request_id=request_id,
     )
 
 
-@app.get("/stats", response_model=StatsResponse)
-def stats():
-    total = _stats["total_queries"]
-    hits = _stats["cache_hits"]
-    hit_latencies = _stats["hit_latencies_ms"]
-    miss_latencies = _stats["miss_latencies_ms"]
-
+@app.get("/stats", response_model=StatsResponse, tags=["ops"])
+def get_stats() -> StatsResponse:
+    cache = get_cache()
     return StatsResponse(
-        total_queries=total,
-        cache_hits=hits,
-        cache_misses=_stats["cache_misses"],
-        hit_rate=round(hits / total, 4) if total else 0.0,
-        estimated_llm_calls_saved=hits,
-        avg_hit_latency_ms=round(sum(hit_latencies) / len(hit_latencies), 2) if hit_latencies else 0.0,
-        avg_miss_latency_ms=round(sum(miss_latencies) / len(miss_latencies), 2) if miss_latencies else 0.0,
+        **stats.snapshot(),
+        cache_size=cache.size(),
+        cache_backend=cache.backend,
+        similarity_threshold=cache.threshold,
     )
+
+
+@app.delete("/cache", response_model=ClearCacheResponse, tags=["ops"])
+def clear_cache(x_admin_token: str | None = Header(default=None)) -> ClearCacheResponse:
+    """Empty the cache. Requires ADMIN_TOKEN to be configured and sent as X-Admin-Token."""
+    if not settings.admin_token:
+        raise HTTPException(
+            status.HTTP_403_FORBIDDEN, "Cache clearing is disabled (no ADMIN_TOKEN)"
+        )
+    if not x_admin_token or not secrets.compare_digest(x_admin_token, settings.admin_token):
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid admin token")
+    removed = get_cache().clear()
+    log.info("cache_cleared removed=%d", removed)
+    return ClearCacheResponse(removed=removed)
