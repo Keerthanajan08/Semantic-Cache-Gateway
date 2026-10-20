@@ -3,7 +3,7 @@ name = "semantic-cache-gateway"
 version = "1.0.0"
 description = "LLM gateway that serves semantically similar queries from cache and falls back to RAG on a miss."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 authors = [{ name = "Keerthana" }]
 
 # Dependencies are pinned in requirements*.txt (deploy hosts like Render read those).
@@ -31,7 +31,7 @@ exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
 
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "PT", "N"]
@@ -41,7 +41,7 @@ ignore = ["RUF001", "RUF003"]  # tests intentionally use non-ASCII strings
 "scripts/*" = ["T201"]
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 packages = ["app"]
 strict = true
 ignore_missing_imports = true

@@ -1,7 +1,7 @@
 # Semantic Cache Gateway
 
 [![CI](https://github.com/Keerthanajan08/Semantic-Cache-Gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/Keerthanajan08/Semantic-Cache-Gateway/actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
+![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)
 ![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)
 ![mypy](https://img.shields.io/badge/mypy-strict-blue)
 
@@ -311,7 +311,7 @@ make eval        # regenerate eval/results.md and the chart
   fails at least one test.
 - **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)):
   - lint and strict type-checking
-  - tests on Python 3.11, 3.12 and 3.13
+  - tests on Python 3.12 and 3.13
   - real-model integration tests
   - the threshold-reproduction check
   - a Docker build with a container smoke test
