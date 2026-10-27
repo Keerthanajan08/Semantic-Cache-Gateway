@@ -17,6 +17,13 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # GitHub runners ship Docker, which blocks forwarded traffic and leaves
+      # snapcraft's LXD build container without internet access.
+      - name: Let LXD containers reach the network
+        run: |
+          sudo iptables -P FORWARD ACCEPT
+          sudo ip6tables -P FORWARD ACCEPT
+
       - name: Build snap
         id: build
         uses: snapcore/action-build@v1
