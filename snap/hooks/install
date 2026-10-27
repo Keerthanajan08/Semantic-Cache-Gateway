@@ -1,0 +1,11 @@
+#!/bin/sh
+# Runs once on first install: records the defaults so `snap get` shows them.
+set -eu
+
+snapctl set \
+  listen-address=127.0.0.1 \
+  port=8000 \
+  llm-provider=mock \
+  embedding-model=all-mpnet-base-v2 \
+  cache-guards=true \
+  log-level=INFO

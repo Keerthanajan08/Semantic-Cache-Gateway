@@ -1,0 +1,54 @@
+name: semantic-cache-gateway
+base: core24
+version: "1.0.0"
+summary: LLM gateway with a semantic cache and RAG fallback
+description: |
+  Serves semantically similar questions from a cache and falls back to
+  retrieval-augmented generation on a miss. Runs as a background service.
+
+  Defaults work offline: mock LLM, in-memory cache, listening on
+  127.0.0.1:8000. Configure with `snap set`, for example:
+
+    sudo snap set semantic-cache-gateway redis-url=redis://localhost:6379/0
+    sudo snap set semantic-cache-gateway llm-provider=groq groq-api-key=gsk_...
+
+  See docs/UBUNTU.md in the source repository for every option.
+grade: stable
+confinement: strict
+
+platforms:
+  amd64:
+
+apps:
+  gateway:
+    command: bin/launch
+    daemon: simple
+    restart-condition: on-failure
+    restart-delay: 5s
+    plugs:
+      - network       # Redis and LLM providers
+      - network-bind  # serve HTTP
+
+parts:
+  gateway:
+    plugin: python
+    source: .
+    python-requirements:
+      - requirements.txt
+    stage-packages:
+      - python3-venv
+    build-environment:
+      # CPU-only torch: a few hundred MB instead of several GB of CUDA libraries.
+      - PIP_EXTRA_INDEX_URL: https://download.pytorch.org/whl/cpu
+    override-build: |
+      craftctl default
+      # Bake the default embedding model into the snap so the service starts
+      # offline and fast (same approach as the Dockerfile).
+      HF_HOME="${CRAFT_PART_INSTALL}/hf" "${CRAFT_PART_INSTALL}/bin/python3" -c \
+        "from sentence_transformers import SentenceTransformer as S; S('all-mpnet-base-v2')"
+
+  launcher:
+    plugin: dump
+    source: snap/local
+    organize:
+      launch: bin/launch

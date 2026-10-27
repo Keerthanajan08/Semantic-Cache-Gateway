@@ -1,0 +1,73 @@
+name: Snap
+
+# Builds the snap on Ubuntu, installs it, and checks the service really works:
+# it starts, serves a cache hit, picks up `snap set` changes, and rejects bad config.
+on:
+  push:
+    branches: [main]
+    paths: ["snap/**", "app/**", "requirements.txt", "pyproject.toml", ".github/workflows/snap.yml"]
+  pull_request:
+    paths: ["snap/**", "app/**", "requirements.txt", "pyproject.toml", ".github/workflows/snap.yml"]
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build snap
+        id: build
+        uses: snapcore/action-build@v1
+
+      - name: Install snap
+        run: |
+          sudo snap install --dangerous ${{ steps.build.outputs.snap }}
+          snap services semantic-cache-gateway
+          sudo snap get semantic-cache-gateway
+
+      - name: Wait for the service
+        run: |
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8000/health; then echo; exit 0; fi
+            sleep 5
+          done
+          sudo snap logs semantic-cache-gateway -n 100
+          exit 1
+
+      - name: Second, paraphrased question is served from cache
+        run: |
+          q() { curl -fsS -X POST http://127.0.0.1:8000/query \
+                  -H 'Content-Type: application/json' -d "{\"query\": \"$1\"}"; }
+          q "How do I reset my password?" | tee first.json; echo
+          q "how can I reset my password" | tee second.json; echo
+          python3 -c "import json; r = json.load(open('second.json')); assert r['cache_hit'], r"
+
+      - name: snap set changes the port and restarts the service
+        run: |
+          sudo snap set semantic-cache-gateway port=8001
+          for _ in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:8001/health; then echo; exit 0; fi
+            sleep 5
+          done
+          sudo snap logs semantic-cache-gateway -n 100
+          exit 1
+
+      - name: Bad config is rejected
+        run: |
+          if sudo snap set semantic-cache-gateway llm-provider=grok; then
+            echo "expected llm-provider=grok to be rejected"; exit 1
+          fi
+          if sudo snap set semantic-cache-gateway port=abc; then
+            echo "expected port=abc to be rejected"; exit 1
+          fi
+
+      - name: Service logs
+        if: always()
+        run: sudo snap logs semantic-cache-gateway -n 50 || true
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: snap
+          path: ${{ steps.build.outputs.snap }}

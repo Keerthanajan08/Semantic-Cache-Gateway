@@ -1,0 +1,31 @@
+# systemd unit for running the gateway straight from a git checkout.
+# deploy/systemd/install.sh fills in @USER@ and @APP_DIR@ and installs it to
+# /etc/systemd/system/. Settings live in @APP_DIR@/.env (see .env.example).
+
+[Unit]
+Description=Semantic Cache Gateway (LLM semantic cache + RAG)
+Documentation=https://github.com/Keerthanajan08/Semantic-Cache-Gateway
+After=network-online.target redis-server.service
+Wants=network-online.target redis-server.service
+
+[Service]
+Type=simple
+User=@USER@
+# The app reads .env from its working directory, so no EnvironmentFile needed.
+WorkingDirectory=@APP_DIR@
+Environment=PYTHONUNBUFFERED=1
+ExecStart=@APP_DIR@/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=on-failure
+RestartSec=5
+# Loading torch and the embedding model takes a while on first start.
+TimeoutStartSec=180
+
+# Hardening: read-only OS, private /tmp, no privilege escalation.
+NoNewPrivileges=true
+ProtectSystem=strict
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
