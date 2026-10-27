@@ -1,0 +1,51 @@
+#!/bin/bash
+# Starts the gateway inside the snap. Settings come from `snap set` and are
+# turned into the environment variables app/config.py already reads.
+set -euo pipefail
+
+# Value of a snap config key, or the given default when it is unset.
+get() {
+  local value
+  value="$(snapctl get "$1")"
+  echo "${value:-$2}"
+}
+
+# Export only when set: an empty string would fail the app's validation
+# (for example CACHE_SIMILARITY_THRESHOLD must be a number or absent).
+export_if_set() {
+  local value
+  value="$(snapctl get "$2")"
+  if [ -n "$value" ]; then
+    export "$1=$value"
+  fi
+}
+
+host="$(get listen-address 127.0.0.1)"
+port="$(get port 8000)"
+
+LLM_PROVIDER="$(get llm-provider mock)"
+LOG_LEVEL="$(get log-level INFO)"
+export LLM_PROVIDER LOG_LEVEL
+export_if_set GROQ_API_KEY groq-api-key
+export_if_set GEMINI_API_KEY gemini-api-key
+export_if_set REDIS_URL redis-url
+export_if_set CACHE_SIMILARITY_THRESHOLD similarity-threshold
+export_if_set CACHE_GUARDS cache-guards
+export_if_set ADMIN_TOKEN admin-token
+
+# The default model is baked into the read-only snap at build time. Any other
+# model is downloaded once into $SNAP_COMMON, which survives snap refreshes.
+model="$(get embedding-model all-mpnet-base-v2)"
+export EMBEDDING_MODEL="$model"
+if [ "$model" = "all-mpnet-base-v2" ]; then
+  export HF_HOME="$SNAP/hf" HF_HUB_OFFLINE=1
+else
+  export HF_HOME="$SNAP_COMMON/hf"
+fi
+
+export PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+
+# Run from the writable data directory so pydantic-settings never picks up a
+# stray .env from somewhere else.
+cd "$SNAP_DATA"
+exec "$SNAP/bin/python3" -m uvicorn app.main:app --host "$host" --port "$port"

@@ -1,0 +1,37 @@
+#!/bin/sh
+# Runs on every `snap set`. Rejects bad values before they reach the service,
+# then restarts the service so new settings take effect.
+set -eu
+
+fail() {
+  echo "$1" >&2
+  exit 1
+}
+
+port="$(snapctl get port)"
+if [ -n "$port" ]; then
+  case "$port" in
+    *[!0-9]*) fail "port must be a number, got '$port'" ;;
+  esac
+  if [ "$port" -lt 1 ] || [ "$port" -gt 65535 ]; then
+    fail "port must be between 1 and 65535, got $port"
+  fi
+fi
+
+provider="$(snapctl get llm-provider)"
+case "$provider" in
+  "" | mock | groq | gemini) ;;
+  *) fail "llm-provider must be mock, groq or gemini, got '$provider'" ;;
+esac
+
+guards="$(snapctl get cache-guards)"
+case "$guards" in
+  "" | true | false) ;;
+  *) fail "cache-guards must be true or false, got '$guards'" ;;
+esac
+
+# Restart only if the service is already running (not during first install).
+service="$SNAP_INSTANCE_NAME.gateway"
+if snapctl services "$service" | grep -qw active; then
+  snapctl restart "$service"
+fi

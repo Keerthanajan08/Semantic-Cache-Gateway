@@ -8,6 +8,18 @@ authors = [{ name = "Keerthana" }]
 
 # Dependencies are pinned in requirements*.txt (deploy hosts like Render read those).
 
+# Makes `pip install .` work (the snap build uses it): ship only the `app`
+# package plus its knowledge-base markdown, not tests/scripts/eval.
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.setuptools.package-data]
+app = ["knowledge_base/*.md"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra --strict-markers -m 'not slow'"

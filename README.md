@@ -324,6 +324,11 @@ make eval        # regenerate eval/results.md and the chart
 | Redis | Upstash / Redis Cloud free tier | Works on plain Redis; no modules needed |
 | LLM | Groq or Gemini free tier | Set `LLM_PROVIDER` and the API key |
 
+**On an Ubuntu server or desktop**, run it as a background service either as a
+**snap** (strictly confined, configured with `snap set`) or as a **systemd**
+service from a checkout (`./deploy/systemd/install.sh`). Both are covered in
+[docs/UBUNTU.md](docs/UBUNTU.md), and CI builds, installs and tests the snap.
+
 The image is about 2 GB: CPU-only torch (~770 MB) plus mpnet (~420 MB).
 
 **Memory:** the running server uses about **810 MB** with mpnet and about
@@ -384,4 +389,6 @@ scripts/
 tests/                  218 tests: unit, API, concurrency, eval methodology, real-model integration
 Dockerfile              multi-stage, CPU torch, model baked in, non-root, healthcheck
 docker-compose.yml      gateway + Redis (bounded memory, LRU, persistence)
+snap/                   snapcraft.yaml, launcher and hooks (snap set → env, validation)
+deploy/systemd/         hardened systemd unit + install script for Ubuntu
 ```
