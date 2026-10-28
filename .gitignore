@@ -14,3 +14,7 @@ htmlcov/
 build/
 *.egg-info/
 *.snap
+
+# Dashboard
+frontend/node_modules/
+app/ui/

@@ -67,6 +67,24 @@ jobs:
       - name: Shipped default threshold still matches the evaluation
         run: python scripts/evaluate_threshold.py --check
 
+  frontend:
+    name: Dashboard (typecheck, tests, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
   docker:
     name: Docker image
     runs-on: ubuntu-latest
@@ -88,3 +106,4 @@ jobs:
                -d '{"query":"How do I reset my password?"}'
           test "$(curl -s -o /dev/null -w '%{http_code}' -X POST localhost:8000/query \
                -H 'content-type: application/json' -d '{"query":"   "}')" = 422
+          curl -sf localhost:8000/ui/ | grep -q '<div id="root">'   # dashboard is served

@@ -14,10 +14,12 @@ import secrets
 import uuid
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import FastAPI, Header, HTTPException, Request, Response, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
 from app import gateway
 from app.cache import get_cache
@@ -34,6 +36,10 @@ from app.schemas import (
 from app.stats import stats
 
 VERSION = "1.0.0"
+
+# The React dashboard, built by `npm run build` in frontend/ (see frontend/README.md).
+# Optional: without a build, the API works as before and / goes to the API docs.
+UI_DIR = Path(__file__).parent / "ui"
 
 logging.basicConfig(
     level=settings.log_level,
@@ -102,7 +108,18 @@ async def llm_config_handler(request: Request, exc: LLMConfigurationError) -> JS
 
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/ui/" if (UI_DIR / "index.html").is_file() else "/docs")
+
+
+def mount_ui(target: FastAPI, ui_dir: Path) -> bool:
+    """Serve the built dashboard at /ui if a build exists. Returns whether it was mounted."""
+    if not (ui_dir / "index.html").is_file():
+        return False
+    target.mount("/ui", StaticFiles(directory=ui_dir, html=True), name="ui")
+    return True
+
+
+mount_ui(app, UI_DIR)
 
 
 @app.get("/health", response_model=HealthResponse, tags=["ops"])

@@ -1,0 +1,2244 @@
+{
+  "n_queries": 106,
+  "n_intents": 14,
+  "max_wrong": 0.01,
+  "llm_ms": 800.0,
+  "best_model": "all-mpnet-base-v2",
+  "models": [
+    {
+      "model": "all-mpnet-base-v2",
+      "embed_ms": 51.2,
+      "expected_latency_ms": 346.0,
+      "chosen": {
+        "threshold": 0.7,
+        "guards": true,
+        "hit_rate": 0.6321,
+        "wrong_rate": 0.0094,
+        "precision": 0.9851
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 0.9623,
+          "wrong_rate": 0.0755,
+          "precision": 0.9216
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 0.9623,
+          "wrong_rate": 0.0755,
+          "precision": 0.9216
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 0.9434,
+          "wrong_rate": 0.0755,
+          "precision": 0.92
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.066,
+          "precision": 0.9278
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.066,
+          "precision": 0.9239
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 0.8396,
+          "wrong_rate": 0.0566,
+          "precision": 0.9326
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 0.8019,
+          "wrong_rate": 0.0566,
+          "precision": 0.9294
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 0.7642,
+          "wrong_rate": 0.0566,
+          "precision": 0.9259
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 0.7453,
+          "wrong_rate": 0.0566,
+          "precision": 0.9241
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 0.717,
+          "wrong_rate": 0.0566,
+          "precision": 0.9211
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 0.6792,
+          "wrong_rate": 0.0283,
+          "precision": 0.9583
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 0.6321,
+          "wrong_rate": 0.0189,
+          "precision": 0.9701
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 0.566,
+          "wrong_rate": 0.0189,
+          "precision": 0.9667
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 0.4434,
+          "wrong_rate": 0.0189,
+          "precision": 0.9574
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 0.3585,
+          "wrong_rate": 0.0189,
+          "precision": 0.9474
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 0.3208,
+          "wrong_rate": 0.0189,
+          "precision": 0.9412
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 0.2736,
+          "wrong_rate": 0.0189,
+          "precision": 0.931
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 0.1981,
+          "wrong_rate": 0.0189,
+          "precision": 0.9048
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.1509,
+          "wrong_rate": 0.0094,
+          "precision": 0.9375
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.1132,
+          "wrong_rate": 0.0094,
+          "precision": 0.9167
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.0283,
+          "wrong_rate": 0.0094,
+          "precision": 0.6667
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.0189,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 0.934,
+          "wrong_rate": 0.0377,
+          "precision": 0.9596
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 0.934,
+          "wrong_rate": 0.0377,
+          "precision": 0.9596
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.0377,
+          "precision": 0.9588
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 0.8868,
+          "wrong_rate": 0.0283,
+          "precision": 0.9681
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 0.8396,
+          "wrong_rate": 0.0283,
+          "precision": 0.9663
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 0.8019,
+          "wrong_rate": 0.0189,
+          "precision": 0.9765
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 0.7547,
+          "wrong_rate": 0.0189,
+          "precision": 0.975
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 0.7075,
+          "wrong_rate": 0.0189,
+          "precision": 0.9733
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 0.6887,
+          "wrong_rate": 0.0189,
+          "precision": 0.9726
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 0.6604,
+          "wrong_rate": 0.0189,
+          "precision": 0.9714
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 0.6321,
+          "wrong_rate": 0.0094,
+          "precision": 0.9851
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 0.5943,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 0.4245,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 0.3491,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 0.3113,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.2642,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.1887,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.1509,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.1132,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.0189,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.0189,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    },
+    {
+      "model": "BAAI/bge-small-en-v1.5",
+      "embed_ms": 23.0,
+      "expected_latency_ms": 393.0,
+      "chosen": {
+        "threshold": 0.86,
+        "guards": true,
+        "hit_rate": 0.5377,
+        "wrong_rate": 0.0094,
+        "precision": 0.9825
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 0.9811,
+          "wrong_rate": 0.1038,
+          "precision": 0.8942
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 0.9434,
+          "wrong_rate": 0.1038,
+          "precision": 0.89
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 0.9245,
+          "wrong_rate": 0.0849,
+          "precision": 0.9082
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 0.8113,
+          "wrong_rate": 0.0849,
+          "precision": 0.8953
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 0.7453,
+          "wrong_rate": 0.0849,
+          "precision": 0.8861
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 0.6509,
+          "wrong_rate": 0.0755,
+          "precision": 0.8841
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0283,
+          "precision": 0.9474
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.4528,
+          "wrong_rate": 0.0283,
+          "precision": 0.9375
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.3208,
+          "wrong_rate": 0.0283,
+          "precision": 0.9118
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.1698,
+          "wrong_rate": 0.0283,
+          "precision": 0.8333
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.0283,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.0943,
+          "precision": 0.9057
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 0.9906,
+          "wrong_rate": 0.0849,
+          "precision": 0.9143
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.066,
+          "precision": 0.932
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.066,
+          "precision": 0.932
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.066,
+          "precision": 0.932
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.066,
+          "precision": 0.932
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.0566,
+          "precision": 0.9406
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.0566,
+          "precision": 0.9381
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 0.8962,
+          "wrong_rate": 0.0377,
+          "precision": 0.9579
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 0.7925,
+          "wrong_rate": 0.0377,
+          "precision": 0.9524
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.7075,
+          "wrong_rate": 0.0377,
+          "precision": 0.9467
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.6226,
+          "wrong_rate": 0.0283,
+          "precision": 0.9545
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0094,
+          "precision": 0.9825
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.4528,
+          "wrong_rate": 0.0094,
+          "precision": 0.9792
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.3113,
+          "wrong_rate": 0.0094,
+          "precision": 0.9697
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.1604,
+          "wrong_rate": 0.0094,
+          "precision": 0.9412
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.0283,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    },
+    {
+      "model": "all-MiniLM-L6-v2",
+      "embed_ms": 13.2,
+      "expected_latency_ms": 406.0,
+      "chosen": {
+        "threshold": 0.74,
+        "guards": true,
+        "hit_rate": 0.5094,
+        "wrong_rate": 0.0094,
+        "precision": 0.9815
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.1038,
+          "precision": 0.8911
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.1038,
+          "precision": 0.8911
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 0.9434,
+          "wrong_rate": 0.1038,
+          "precision": 0.89
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.1038,
+          "precision": 0.8866
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 0.9057,
+          "wrong_rate": 0.1038,
+          "precision": 0.8854
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.1038,
+          "precision": 0.8804
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 0.8585,
+          "wrong_rate": 0.1038,
+          "precision": 0.8791
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 0.783,
+          "wrong_rate": 0.0943,
+          "precision": 0.8795
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 0.7642,
+          "wrong_rate": 0.0755,
+          "precision": 0.9012
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 0.7264,
+          "wrong_rate": 0.0755,
+          "precision": 0.8961
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 0.6415,
+          "wrong_rate": 0.0755,
+          "precision": 0.8824
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 0.5755,
+          "wrong_rate": 0.066,
+          "precision": 0.8852
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 0.5094,
+          "wrong_rate": 0.0377,
+          "precision": 0.9259
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 0.4528,
+          "wrong_rate": 0.0377,
+          "precision": 0.9167
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 0.3774,
+          "wrong_rate": 0.0377,
+          "precision": 0.9
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 0.3585,
+          "wrong_rate": 0.0377,
+          "precision": 0.8947
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 0.3396,
+          "wrong_rate": 0.0377,
+          "precision": 0.8889
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 0.2925,
+          "wrong_rate": 0.0377,
+          "precision": 0.871
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.2358,
+          "wrong_rate": 0.0377,
+          "precision": 0.84
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.1321,
+          "wrong_rate": 0.0283,
+          "precision": 0.7857
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.0472,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.0283,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.066,
+          "precision": 0.9278
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.066,
+          "precision": 0.9278
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 0.9057,
+          "wrong_rate": 0.066,
+          "precision": 0.9271
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 0.8774,
+          "wrong_rate": 0.066,
+          "precision": 0.9247
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 0.8585,
+          "wrong_rate": 0.066,
+          "precision": 0.9231
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 0.8208,
+          "wrong_rate": 0.066,
+          "precision": 0.9195
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 0.8019,
+          "wrong_rate": 0.0566,
+          "precision": 0.9294
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 0.7358,
+          "wrong_rate": 0.0472,
+          "precision": 0.9359
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 0.717,
+          "wrong_rate": 0.0283,
+          "precision": 0.9605
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 0.6792,
+          "wrong_rate": 0.0283,
+          "precision": 0.9583
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 0.6038,
+          "wrong_rate": 0.0283,
+          "precision": 0.9531
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 0.5566,
+          "wrong_rate": 0.0189,
+          "precision": 0.9661
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 0.5094,
+          "wrong_rate": 0.0094,
+          "precision": 0.9815
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 0.4528,
+          "wrong_rate": 0.0094,
+          "precision": 0.9792
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 0.3679,
+          "wrong_rate": 0.0094,
+          "precision": 0.9744
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 0.3491,
+          "wrong_rate": 0.0094,
+          "precision": 0.973
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.3302,
+          "wrong_rate": 0.0094,
+          "precision": 0.9714
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.283,
+          "wrong_rate": 0.0094,
+          "precision": 0.9667
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.217,
+          "wrong_rate": 0.0094,
+          "precision": 0.9565
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.1132,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.0472,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.0283,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    },
+    {
+      "model": "sentence-transformers/all-MiniLM-L12-v2",
+      "embed_ms": 24.6,
+      "expected_latency_ms": 455.0,
+      "chosen": {
+        "threshold": 0.76,
+        "guards": true,
+        "hit_rate": 0.4623,
+        "wrong_rate": 0.0094,
+        "precision": 0.9796
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0755,
+          "precision": 0.9223
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 0.9623,
+          "wrong_rate": 0.0755,
+          "precision": 0.9216
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.0755,
+          "precision": 0.9208
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 0.9057,
+          "wrong_rate": 0.0755,
+          "precision": 0.9167
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 0.8962,
+          "wrong_rate": 0.0755,
+          "precision": 0.9158
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.0755,
+          "precision": 0.913
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 0.8585,
+          "wrong_rate": 0.0755,
+          "precision": 0.9121
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 0.8302,
+          "wrong_rate": 0.066,
+          "precision": 0.9205
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 0.7736,
+          "wrong_rate": 0.0566,
+          "precision": 0.9268
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 0.7264,
+          "wrong_rate": 0.0566,
+          "precision": 0.9221
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 0.6321,
+          "wrong_rate": 0.0566,
+          "precision": 0.9104
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 0.5755,
+          "wrong_rate": 0.0566,
+          "precision": 0.9016
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0283,
+          "precision": 0.9474
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 0.4717,
+          "wrong_rate": 0.0283,
+          "precision": 0.94
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 0.4057,
+          "wrong_rate": 0.0189,
+          "precision": 0.9535
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 0.3491,
+          "wrong_rate": 0.0189,
+          "precision": 0.9459
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 0.3208,
+          "wrong_rate": 0.0189,
+          "precision": 0.9412
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 0.2642,
+          "wrong_rate": 0.0189,
+          "precision": 0.9286
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.1698,
+          "wrong_rate": 0.0094,
+          "precision": 0.9444
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.0849,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.0377,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 0.9434,
+          "wrong_rate": 0.0566,
+          "precision": 0.94
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 0.934,
+          "wrong_rate": 0.0566,
+          "precision": 0.9394
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 0.9151,
+          "wrong_rate": 0.0566,
+          "precision": 0.9381
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.0566,
+          "precision": 0.9348
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 0.8585,
+          "wrong_rate": 0.0566,
+          "precision": 0.9341
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 0.8302,
+          "wrong_rate": 0.0566,
+          "precision": 0.9318
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 0.8019,
+          "wrong_rate": 0.0472,
+          "precision": 0.9412
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 0.7736,
+          "wrong_rate": 0.0377,
+          "precision": 0.9512
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 0.7264,
+          "wrong_rate": 0.0283,
+          "precision": 0.961
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 0.6887,
+          "wrong_rate": 0.0283,
+          "precision": 0.9589
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 0.5943,
+          "wrong_rate": 0.0283,
+          "precision": 0.9524
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 0.5472,
+          "wrong_rate": 0.0189,
+          "precision": 0.9655
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0189,
+          "precision": 0.9649
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 0.4623,
+          "wrong_rate": 0.0094,
+          "precision": 0.9796
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 0.4057,
+          "wrong_rate": 0.0094,
+          "precision": 0.9767
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 0.3491,
+          "wrong_rate": 0.0094,
+          "precision": 0.973
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.3208,
+          "wrong_rate": 0.0094,
+          "precision": 0.9706
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.2547,
+          "wrong_rate": 0.0094,
+          "precision": 0.963
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.1698,
+          "wrong_rate": 0.0094,
+          "precision": 0.9444
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.0849,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.0377,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    },
+    {
+      "model": "BAAI/bge-base-en-v1.5",
+      "embed_ms": 56.3,
+      "expected_latency_ms": 517.0,
+      "chosen": {
+        "threshold": 0.86,
+        "guards": true,
+        "hit_rate": 0.4245,
+        "wrong_rate": 0.0094,
+        "precision": 0.9778
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 0.9811,
+          "wrong_rate": 0.0943,
+          "precision": 0.9038
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 0.9623,
+          "wrong_rate": 0.0943,
+          "precision": 0.902
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 0.8962,
+          "wrong_rate": 0.0849,
+          "precision": 0.9053
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 0.8491,
+          "wrong_rate": 0.0755,
+          "precision": 0.9111
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 0.7547,
+          "wrong_rate": 0.0472,
+          "precision": 0.9375
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 0.6604,
+          "wrong_rate": 0.0472,
+          "precision": 0.9286
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 0.5849,
+          "wrong_rate": 0.0472,
+          "precision": 0.9194
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.4245,
+          "wrong_rate": 0.0377,
+          "precision": 0.9111
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.3396,
+          "wrong_rate": 0.0283,
+          "precision": 0.9167
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.2547,
+          "wrong_rate": 0.0283,
+          "precision": 0.8889
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.0566,
+          "wrong_rate": 0.0094,
+          "precision": 0.8333
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.0472,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1038,
+          "precision": 0.8962
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 0.9906,
+          "wrong_rate": 0.0943,
+          "precision": 0.9048
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 0.9906,
+          "wrong_rate": 0.0943,
+          "precision": 0.9048
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0755,
+          "precision": 0.9223
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0755,
+          "precision": 0.9223
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0755,
+          "precision": 0.9223
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.066,
+          "precision": 0.9307
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 0.934,
+          "wrong_rate": 0.0566,
+          "precision": 0.9394
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.0472,
+          "precision": 0.9457
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 0.8208,
+          "wrong_rate": 0.0377,
+          "precision": 0.954
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 0.7358,
+          "wrong_rate": 0.0189,
+          "precision": 0.9744
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.6604,
+          "wrong_rate": 0.0189,
+          "precision": 0.9714
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.5849,
+          "wrong_rate": 0.0189,
+          "precision": 0.9677
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.4245,
+          "wrong_rate": 0.0094,
+          "precision": 0.9778
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.3208,
+          "wrong_rate": 0.0094,
+          "precision": 0.9706
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.2358,
+          "wrong_rate": 0.0094,
+          "precision": 0.96
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.0566,
+          "wrong_rate": 0.0094,
+          "precision": 0.8333
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.0472,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    },
+    {
+      "model": "thenlper/gte-small",
+      "embed_ms": 36.9,
+      "expected_latency_ms": 792.0,
+      "chosen": {
+        "threshold": 0.96,
+        "guards": true,
+        "hit_rate": 0.0566,
+        "wrong_rate": 0.0,
+        "precision": 1.0
+      },
+      "sweep": [
+        {
+          "threshold": 0.5,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.52,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.54,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.56,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.58,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.6,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.62,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.64,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.66,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.68,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.7,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.72,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.74,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.76,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.78,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.8,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.82,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.84,
+          "guards": false,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1321,
+          "precision": 0.8679
+        },
+        {
+          "threshold": 0.86,
+          "guards": false,
+          "hit_rate": 0.9811,
+          "wrong_rate": 0.1226,
+          "precision": 0.875
+        },
+        {
+          "threshold": 0.88,
+          "guards": false,
+          "hit_rate": 0.8962,
+          "wrong_rate": 0.1038,
+          "precision": 0.8842
+        },
+        {
+          "threshold": 0.9,
+          "guards": false,
+          "hit_rate": 0.6981,
+          "wrong_rate": 0.0943,
+          "precision": 0.8649
+        },
+        {
+          "threshold": 0.92,
+          "guards": false,
+          "hit_rate": 0.566,
+          "wrong_rate": 0.0849,
+          "precision": 0.85
+        },
+        {
+          "threshold": 0.94,
+          "guards": false,
+          "hit_rate": 0.2547,
+          "wrong_rate": 0.0472,
+          "precision": 0.8148
+        },
+        {
+          "threshold": 0.96,
+          "guards": false,
+          "hit_rate": 0.0755,
+          "wrong_rate": 0.0283,
+          "precision": 0.625
+        },
+        {
+          "threshold": 0.98,
+          "guards": false,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.5,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.52,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.54,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.56,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.58,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.6,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.62,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.64,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.66,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.68,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.7,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.72,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.74,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.76,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.78,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.8,
+          "guards": true,
+          "hit_rate": 1.0,
+          "wrong_rate": 0.1132,
+          "precision": 0.8868
+        },
+        {
+          "threshold": 0.82,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0849,
+          "precision": 0.9126
+        },
+        {
+          "threshold": 0.84,
+          "guards": true,
+          "hit_rate": 0.9717,
+          "wrong_rate": 0.0849,
+          "precision": 0.9126
+        },
+        {
+          "threshold": 0.86,
+          "guards": true,
+          "hit_rate": 0.9528,
+          "wrong_rate": 0.0755,
+          "precision": 0.9208
+        },
+        {
+          "threshold": 0.88,
+          "guards": true,
+          "hit_rate": 0.8679,
+          "wrong_rate": 0.0566,
+          "precision": 0.9348
+        },
+        {
+          "threshold": 0.9,
+          "guards": true,
+          "hit_rate": 0.6698,
+          "wrong_rate": 0.0472,
+          "precision": 0.9296
+        },
+        {
+          "threshold": 0.92,
+          "guards": true,
+          "hit_rate": 0.5377,
+          "wrong_rate": 0.0283,
+          "precision": 0.9474
+        },
+        {
+          "threshold": 0.94,
+          "guards": true,
+          "hit_rate": 0.2453,
+          "wrong_rate": 0.0189,
+          "precision": 0.9231
+        },
+        {
+          "threshold": 0.96,
+          "guards": true,
+          "hit_rate": 0.0566,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        },
+        {
+          "threshold": 0.98,
+          "guards": true,
+          "hit_rate": 0.0,
+          "wrong_rate": 0.0,
+          "precision": 1.0
+        }
+      ]
+    }
+  ],
+  "guard_probes": [
+    {
+      "cached": "How do I reset my password?",
+      "incoming": "How do I NOT reset my password?",
+      "similarity": 0.734,
+      "would_hit": true,
+      "blocked_by": "negation"
+    },
+    {
+      "cached": "Can I get a refund?",
+      "incoming": "Why can't I get a refund?",
+      "similarity": 0.724,
+      "would_hit": true,
+      "blocked_by": "negation"
+    },
+    {
+      "cached": "Should I enable two-factor authentication?",
+      "incoming": "Should I not enable two-factor authentication?",
+      "similarity": 0.928,
+      "would_hit": true,
+      "blocked_by": "negation"
+    },
+    {
+      "cached": "My account is locked",
+      "incoming": "My account is not locked but I can't log in",
+      "similarity": 0.851,
+      "would_hit": true,
+      "blocked_by": "negation"
+    },
+    {
+      "cached": "Refund for order 1234",
+      "incoming": "Refund for order 5678",
+      "similarity": 0.798,
+      "would_hit": true,
+      "blocked_by": "numbers"
+    },
+    {
+      "cached": "What does the 10 seat plan cost?",
+      "incoming": "What does the 50 seat plan cost?",
+      "similarity": 0.953,
+      "would_hit": true,
+      "blocked_by": "numbers"
+    },
+    {
+      "cached": "My card was charged $20",
+      "incoming": "My card was charged $200",
+      "similarity": 0.872,
+      "would_hit": true,
+      "blocked_by": "numbers"
+    }
+  ]
+}

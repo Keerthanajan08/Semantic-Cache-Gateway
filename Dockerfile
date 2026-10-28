@@ -1,5 +1,14 @@
 # syntax=docker/dockerfile:1
 
+# ---- dashboard: build the React UI -------------------------------------------
+FROM node:22-slim AS ui
+WORKDIR /build
+COPY frontend/package.json frontend/package-lock.json frontend/
+RUN cd frontend && npm ci
+COPY frontend frontend
+COPY eval/results.json eval/results.json
+RUN cd frontend && npm run build   # writes /build/app/ui
+
 # ---- builder: install dependencies into a venv -------------------------------
 FROM python:3.12-slim AS builder
 ENV PIP_NO_CACHE_DIR=1 PIP_DISABLE_PIP_VERSION_CHECK=1
@@ -29,6 +38,7 @@ COPY --from=builder /opt/venv /opt/venv
 COPY --from=builder --chown=app /opt/hf /opt/hf
 WORKDIR /srv
 COPY --chown=app app ./app
+COPY --from=ui --chown=app /build/app/ui ./app/ui
 
 USER app
 EXPOSE 8000
