@@ -6,10 +6,12 @@ replaced by fast deterministic fakes (see conftest.py).
 import re
 
 import pytest
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 import app.cache as cache_module
 import app.llm_providers as llm_module
+import app.main as main_module
 from app.config import settings
 from app.main import app
 from tests.conftest import CountingProvider
@@ -45,10 +47,34 @@ class TestHealth:
         assert body["status"] == "degraded"
         assert body["cache_reachable"] is False
 
-    def test_root_redirects_to_docs(self, client):
+    def test_root_redirects_to_docs_without_a_dashboard_build(self, client, monkeypatch, tmp_path):
+        monkeypatch.setattr(main_module, "UI_DIR", tmp_path)
         response = client.get("/", follow_redirects=False)
         assert response.status_code in (302, 307)
         assert response.headers["location"] == "/docs"
+
+    def test_root_redirects_to_dashboard_when_built(self, client, monkeypatch, tmp_path):
+        (tmp_path / "index.html").write_text("<!doctype html>", encoding="utf-8")
+        monkeypatch.setattr(main_module, "UI_DIR", tmp_path)
+        response = client.get("/", follow_redirects=False)
+        assert response.headers["location"] == "/ui/"
+
+
+class TestDashboard:
+    def test_serves_a_build(self, tmp_path):
+        (tmp_path / "index.html").write_text("<h1>dashboard</h1>", encoding="utf-8")
+        (tmp_path / "assets").mkdir()
+        (tmp_path / "assets" / "app.js").write_text("console.log(1)", encoding="utf-8")
+        target = FastAPI()
+        assert main_module.mount_ui(target, tmp_path) is True
+        ui = TestClient(target)
+        assert "dashboard" in ui.get("/ui/").text
+        assert ui.get("/ui/assets/app.js").status_code == 200
+
+    def test_skips_mounting_without_a_build(self, tmp_path):
+        target = FastAPI()
+        assert main_module.mount_ui(target, tmp_path) is False
+        assert TestClient(target).get("/ui/").status_code == 404
 
 
 class TestQuery:

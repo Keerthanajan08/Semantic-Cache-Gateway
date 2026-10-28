@@ -18,6 +18,16 @@ dangerous: serving a confident, wrong answer to a question that only
 | **3x fewer wrong answers** from safety guards | 2.8% → 0.9% at the default threshold |
 | **~57% lower expected latency** | ~350 ms vs 800 ms per request, with an 800 ms LLM |
 
+**Dashboard** (React + TypeScript, served by the gateway at `/ui`): ask questions
+and watch paraphrases hit the cache while look-alike traps get blocked, follow
+live hit rate and latency, and explore the threshold trade-off on the real
+evaluation data.
+
+![Dashboard](docs/screenshots/00-dashboard.png)
+
+*Captured on a small 2-core cloud VM with the mock LLM, so latencies are higher
+than the benchmark figures above.*
+
 ## The problem
 
 Support bots and internal Q&A tools get the same question phrased a dozen
@@ -151,10 +161,18 @@ cp .env.example .env
 make run                # http://127.0.0.1:8000/docs
 ```
 
+**Dashboard** (Node 20+), on top of the local setup above:
+
+```bash
+make ui-install
+make ui-build           # builds into app/ui; restart the server, then open http://127.0.0.1:8000
+make ui-dev             # or: hot-reloading dev server on http://127.0.0.1:5173 (proxies to :8000)
+```
+
 **Docker** (gateway + Redis, with a persistent cache shared across restarts):
 
 ```bash
-docker compose up --build
+docker compose up --build    # dashboard included: http://127.0.0.1:8000
 ```
 
 Then, in another terminal, run `python scripts/run_demo.py`:
@@ -198,7 +216,8 @@ so it goes to RAG + LLM instead of being served the wrong answer.
 
 ![Demo run](docs/screenshots/04-demo.png)
 
-**Test suite**: 204 fast tests, 99% branch coverage.
+**Test suite**: fast backend tests with 99% branch coverage (the dashboard has
+its own Vitest suite, run in CI alongside a production build).
 
 ![Tests](docs/screenshots/05-tests.png)
 
@@ -212,6 +231,7 @@ Interactive docs at `/docs`.
 | `GET /stats` | Hit rate, LLM calls saved, guard vetoes, p50/p95 latency, cache size |
 | `GET /health` | Liveness, plus whether the cache backend is reachable (`degraded` if Redis is down) |
 | `DELETE /cache` | Empty the cache (requires `ADMIN_TOKEN`; disabled otherwise) |
+| `GET /ui/` | The dashboard, when built (`/` redirects there; otherwise to `/docs`) |
 
 ```bash
 curl -X POST localhost:8000/query -H 'Content-Type: application/json' \
@@ -389,6 +409,7 @@ scripts/
 tests/                  218 tests: unit, API, concurrency, eval methodology, real-model integration
 Dockerfile              multi-stage, CPU torch, model baked in, non-root, healthcheck
 docker-compose.yml      gateway + Redis (bounded memory, LRU, persistence)
+frontend/               React + TypeScript dashboard (Vite, Vitest); builds into app/ui
 snap/                   snapcraft.yaml, launcher and hooks (snap set → env, validation)
 deploy/systemd/         hardened systemd unit + install script for Ubuntu
 ```

@@ -23,7 +23,7 @@ Usage:
 
 With several models it also compares them (hit rate at the wrong-answer
 budget, per-query embedding latency) and details the best one.
-Writes eval/results.md and eval/threshold_sweep.png.
+Writes eval/results.md, eval/results.json (for the dashboard) and eval/threshold_sweep.png.
 """
 
 from __future__ import annotations
@@ -304,6 +304,55 @@ def pick_best(
     return min(evaluated, key=lambda pair: expected_latency_ms(pair[0], llm_ms))
 
 
+def results_json(
+    results: list[ModelResult],
+    best: ModelResult,
+    probes: list[tuple[str, str, float, bool, str | None]],
+    n_queries: int,
+    n_intents: int,
+    max_wrong: float,
+    llm_ms: float,
+) -> dict[str, object]:
+    """Same data as results.md, machine-readable (the dashboard's threshold explorer reads it)."""
+
+    def row(r: SweepRow) -> dict[str, object]:
+        return {
+            "threshold": r.threshold,
+            "guards": r.guards,
+            "hit_rate": round(r.hit_rate, 4),
+            "wrong_rate": round(r.wrong_rate, 4),
+            "precision": round(r.precision, 4),
+        }
+
+    return {
+        "n_queries": n_queries,
+        "n_intents": n_intents,
+        "max_wrong": max_wrong,
+        "llm_ms": llm_ms,
+        "best_model": best.model,
+        "models": [
+            {
+                "model": r.model,
+                "embed_ms": round(r.embed_ms, 1),
+                "expected_latency_ms": round(expected_latency_ms(r, llm_ms), 1),
+                "chosen": row(r.chosen),
+                "sweep": [row(s) for s in r.rows],
+            }
+            for r in sorted(results, key=lambda r: expected_latency_ms(r, llm_ms))
+        ],
+        "guard_probes": [
+            {
+                "cached": a,
+                "incoming": b,
+                "similarity": round(sim, 3),
+                "would_hit": would_hit,
+                "blocked_by": reason,
+            }
+            for a, b, sim, would_hit, reason in probes
+        ],
+    }
+
+
 def check_recommended(models: list[str], intents: dict[str, list[str]], max_wrong: float) -> int:
     failures = 0
     for model in models:
@@ -364,6 +413,8 @@ def main() -> None:
         has_plot,
     )
     (EVAL_DIR / "results.md").write_text(report, encoding="utf-8")
+    data = results_json(results, best, probes, n_queries, len(intents), args.max_wrong, args.llm_ms)
+    (EVAL_DIR / "results.json").write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     print(report)
 
 

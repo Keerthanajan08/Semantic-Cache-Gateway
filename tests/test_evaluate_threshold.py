@@ -101,3 +101,31 @@ def test_guard_probes_are_all_blocked():
     pairs = json.loads((ROOT / "eval/guard_probes.json").read_text(encoding="utf-8"))["pairs"]
     for cached, incoming in pairs:
         assert veto_reason(incoming, cached), f"not blocked: {incoming!r}"
+
+
+def test_results_json_has_what_the_dashboard_reads():
+    rows = [row(0.6, 0.02, hit=0.8), row(0.7, 0.0, hit=0.6), row(0.7, 0.03, hit=0.7, guards=False)]
+    fast = ev.ModelResult("fast", embed_ms=10.0, rows=rows, chosen=rows[1])
+    slow = ev.ModelResult("slow", embed_ms=90.0, rows=rows, chosen=rows[1])
+    probes = [("refund 1234", "refund 5678", 0.8, True, "numbers")]
+    data = ev.results_json([slow, fast], fast, probes, 10, 3, 0.01, 800.0)
+
+    assert data["best_model"] == "fast"
+    assert [m["model"] for m in data["models"]] == ["fast", "slow"]  # ranked by expected latency
+    model = data["models"][0]
+    assert model["chosen"]["threshold"] == 0.7
+    assert len(model["sweep"]) == 3
+    assert model["expected_latency_ms"] == pytest.approx(10 + 0.4 * 800)
+    assert data["guard_probes"][0]["blocked_by"] == "numbers"
+    json.dumps(data)  # serialisable
+
+
+def test_committed_results_json_matches_shipped_thresholds():
+    """eval/results.json feeds the dashboard; it must agree with the thresholds the app ships."""
+    from app.config import RECOMMENDED_THRESHOLDS
+
+    data = json.loads((ROOT / "eval/results.json").read_text(encoding="utf-8"))
+    for model in data["models"]:
+        if model["model"] in RECOMMENDED_THRESHOLDS:
+            assert model["chosen"]["threshold"] == RECOMMENDED_THRESHOLDS[model["model"]]
+    assert data["best_model"] == data["models"][0]["model"]

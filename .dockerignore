@@ -13,3 +13,6 @@ eval
 scripts
 docs
 *.md
+!eval/results.json
+frontend/node_modules
+app/ui
